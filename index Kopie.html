@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wochenkalender 2027 · Traumapädagogik Döhler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --petrol:#35616C; --sage:#5E8679; --mint:#7EAFB2; --cream:#FCF6E8;
+    --paper:#F7F5F0; --ink:#26383D; --muted:#6B7F82; --line:#E3E0D6;
+    --rose:#B5655A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Nunito Sans",system-ui,sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,var(--cream) 0%,var(--paper) 320px);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--petrol)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header{padding:28px 0 10px;text-align:center}
+  header img.logo{width:min(300px,70vw);height:auto;display:block;margin:0 auto}
+  .claim{font-family:"Josefin Sans",sans-serif;letter-spacing:.22em;color:var(--sage);
+    font-size:.82rem;text-transform:uppercase;margin:14px 0 0}
+  h1{font-family:"Josefin Sans",sans-serif;font-weight:700;color:var(--petrol);
+    font-size:clamp(1.5rem,3.6vw,2.2rem);letter-spacing:.06em;margin:22px 0 4px}
+  .sub{color:var(--muted);margin:0 0 6px;font-size:.98rem}
+
+  .todaybar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+    margin:18px auto 0;padding:10px 18px;border-radius:999px;background:#fff;width:fit-content;max-width:100%;
+    box-shadow:0 3px 14px rgba(53,97,108,.08);font-size:.95rem;color:var(--ink);border:0;font-family:inherit;cursor:default}
+  .todaybar.link{cursor:pointer}
+  .todaybar .tdot{width:10px;height:10px;border-radius:50%;background:var(--rose);flex:none;
+    box-shadow:0 0 0 4px rgba(181,101,90,.15)}
+  .todaybar b{color:var(--petrol)}
+  .todaybar .tx{color:var(--muted)}
+  /* week navigation */
+  .weekbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 14px}
+  .navbtn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--petrol);
+    width:48px;height:48px;border-radius:50%;font-size:1.3rem;cursor:pointer;flex:none;
+    display:grid;place-items:center;transition:background .2s,transform .2s}
+  .navbtn:hover{background:var(--cream)}
+  .navbtn:active{transform:scale(.95)}
+  .navbtn:disabled{opacity:.3;cursor:default}
+  .weekinfo{text-align:center;flex:1}
+  .kw{font-family:"Josefin Sans",sans-serif;font-weight:700;color:var(--petrol);
+    font-size:clamp(1.3rem,3vw,1.7rem);letter-spacing:.04em}
+  .range{color:var(--muted);font-size:.95rem;margin-top:2px}
+  .todaybtn{appearance:none;border:0;background:var(--petrol);color:#fff;border-radius:999px;
+    padding:6px 14px;font:600 .8rem "Nunito Sans",sans-serif;cursor:pointer;margin-top:8px}
+  .todaybtn[hidden]{display:none}
+
+  /* card */
+  .card{background:#fff;border-radius:22px;box-shadow:0 10px 40px rgba(53,97,108,.12);
+    overflow:hidden;display:grid;grid-template-columns:1.55fr 1fr}
+  .imgbox{position:relative;background:#EEF1EE;cursor:zoom-in;aspect-ratio:1748/1240;align-self:center}
+  .imgbox img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .35s}
+  .imgbox img.loading{opacity:.15}
+  .zoomhint{position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);
+    color:var(--petrol);font-size:.78rem;font-weight:600;padding:6px 11px;border-radius:999px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .side{padding:26px 26px 22px;display:flex;flex-direction:column;gap:18px}
+  .label{font-family:"Josefin Sans",sans-serif;text-transform:uppercase;letter-spacing:.18em;
+    font-size:.72rem;color:var(--sage);font-weight:600}
+  .title{font-family:"Josefin Sans",sans-serif;font-size:1.28rem;line-height:1.3;color:var(--petrol);
+    margin:6px 0 0;font-weight:700}
+  .impulse{background:var(--cream);border-left:4px solid var(--mint);border-radius:0 12px 12px 0;
+    padding:14px 16px;line-height:1.55;font-size:1rem;margin:0}
+
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{border:1px solid var(--line);border-radius:12px;padding:8px 2px 7px;text-align:center;
+    background:#fff;min-height:64px;position:relative}
+  .day .dn{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .day .dd{font-family:"Josefin Sans",sans-serif;font-size:1.25rem;font-weight:700;color:var(--ink);margin-top:2px}
+  .day.we .dd{color:var(--sage)}
+  .day.other{opacity:.38}
+  .day.hol{background:#F3EBE2;border-color:#E6D3C4}
+  .day.hol .dd{color:var(--rose)}
+  .day.today{background:var(--petrol);border-color:var(--petrol)}
+  .day.today .dn,.day.today .dd{color:#fff}
+  .day .dot{width:6px;height:6px;border-radius:50%;background:var(--rose);margin:3px auto 0}
+  .day.today .dot{background:#fff}
+  .holist{font-size:.85rem;color:var(--rose);margin:-6px 0 0;line-height:1.45}
+  .holist:empty{display:none}
+
+  .cta{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;
+    font-size:.9rem;padding:11px 16px;border-radius:12px;border:1px solid var(--petrol);
+    color:var(--petrol);background:#fff;cursor:pointer;font-family:inherit}
+  .btn.primary{background:var(--petrol);color:#fff}
+  .btn:hover{filter:brightness(1.06)}
+  .share-ok{font-size:.82rem;color:var(--sage);align-self:center}
+
+  /* month overview */
+  section.year{margin:46px 0 10px}
+  .yearhead{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h2{font-family:"Josefin Sans",sans-serif;color:var(--petrol);font-size:1.35rem;margin:0;letter-spacing:.04em}
+  .months{display:flex;gap:6px;flex-wrap:wrap}
+  .months button{appearance:none;border:1px solid var(--line);background:#fff;border-radius:999px;
+    padding:6px 11px;font:600 .8rem "Nunito Sans",sans-serif;color:var(--petrol);cursor:pointer}
+  .months button.on{background:var(--petrol);color:#fff;border-color:var(--petrol)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+  .tile{appearance:none;border:0;padding:0;background:#fff;border-radius:14px;overflow:hidden;cursor:pointer;
+    text-align:left;box-shadow:0 3px 14px rgba(53,97,108,.08);transition:transform .2s,box-shadow .2s;
+    font-family:inherit;color:inherit;outline-offset:3px}
+  .tile:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(53,97,108,.16)}
+  .tile img{width:100%;aspect-ratio:1748/1240;object-fit:cover;display:block;background:#EEF1EE}
+  .tile .tl{padding:8px 10px 10px}
+  .tile .tk{font:700 .78rem "Josefin Sans",sans-serif;color:var(--sage);letter-spacing:.06em}
+  .tile .tt{font-size:.8rem;line-height:1.3;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .tile.cur{box-shadow:0 0 0 3px var(--petrol)}
+  .tile.now .tk::after{content:" · diese Woche";color:var(--rose)}
+
+  /* about / contact */
+  .about{margin:54px 0 0;background:var(--petrol);color:#fff;border-radius:22px;padding:30px;
+    display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+  .about h2{color:#fff}
+  .about p{line-height:1.6;margin:10px 0 0;color:#E6EFEF}
+  .services{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 18px;padding:0;list-style:none}
+  .services li{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:5px 12px;font-size:.82rem}
+  .about .btn{background:#fff;color:var(--petrol);border-color:#fff}
+  .qr{background:#fff;border-radius:18px;padding:12px;text-align:center;color:var(--petrol);font-size:.75rem;font-weight:700}
+  .qr img{width:150px;display:block;margin:0 auto 4px}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:26px 0 40px;line-height:1.6}
+
+  /* lightbox */
+  .lb{position:fixed;inset:0;background:rgba(20,34,38,.94);display:none;z-index:50;
+    flex-direction:column}
+  .lb.open{display:flex}
+  .lbtop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:#fff;gap:10px}
+  .lbtop span{font-size:.9rem;opacity:.9}
+  .lbclose{appearance:none;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;
+    padding:8px 14px;font:600 .85rem "Nunito Sans",sans-serif;cursor:pointer}
+  .lbscroll{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:0 12px 16px}
+  .lbscroll img{max-width:100%;max-height:100%;border-radius:8px;cursor:zoom-in;background:#fff}
+  .lbscroll.zoom{align-items:flex-start;justify-content:flex-start}
+  .lbscroll.zoom img{max-width:none;max-height:none;width:1748px;cursor:zoom-out}
+
+  .day{cursor:pointer;font-family:inherit;color:inherit;appearance:none;width:100%}
+  .day:hover{border-color:var(--mint)}
+  .day.sel{outline:2px solid var(--mint);outline-offset:1px}
+  .day .marks{display:flex;gap:3px;justify-content:center;margin-top:3px;min-height:6px}
+  .day .marks i{width:6px;height:6px;border-radius:50%;display:block}
+  .day .marks .mh{background:var(--rose)} .day .marks .mt{background:var(--petrol)} .day .marks .mn{background:var(--mint)}
+  .day.today .marks i{background:#fff}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.74rem;color:var(--muted);margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+
+  /* Tagesbereich */
+  .dayarea{margin-top:22px;background:#fff;border-radius:22px;box-shadow:0 10px 40px rgba(53,97,108,.08);padding:24px}
+  .dayhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .dayhead h2{font-size:1.25rem}
+  .dayhead .tag{font-size:.8rem;font-weight:700;color:#fff;background:var(--rose);border-radius:999px;padding:3px 10px}
+  .dayhead .tag.td{background:var(--petrol)}
+  .daycols{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:18px}
+  .box{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--paper)}
+  .box h4{margin:0 0 8px;font:700 .74rem "Josefin Sans",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--sage)}
+  .ex-t{font-family:"Josefin Sans",sans-serif;font-weight:700;color:var(--petrol);font-size:1.1rem;margin:0 0 6px}
+  .ex-d{margin:0;line-height:1.55}
+  .ex-timer{margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ex-timer .btn{padding:8px 13px;font-size:.84rem}
+  .breath{width:34px;height:34px;border-radius:50%;background:var(--mint);opacity:.5;transform:scale(.6);transition:transform 4s ease-in-out,opacity 4s}
+  .breath.in{transform:scale(1);opacity:1}
+  .ev{background:#fff;border-radius:12px;padding:10px 12px;border-left:4px solid var(--petrol);margin-bottom:8px}
+  .ev b{color:var(--petrol);display:block}
+  .ev small{color:var(--muted)}
+  .ev a{font-size:.84rem;font-weight:700}
+  .empty{color:var(--muted);font-size:.92rem;line-height:1.5;margin:0 0 10px}
+  textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+    font:inherit;font-size:.95rem;resize:vertical;background:#fff;color:var(--ink)}
+  textarea:focus,input:focus,select:focus{outline:2px solid var(--mint);outline-offset:1px}
+  .hint{font-size:.76rem;color:var(--muted);margin-top:6px}
+  .saved{color:var(--sage);font-weight:700}
+
+  /* Termine-Liste */
+  .events{margin:46px 0 0}
+  .evlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .evcard{background:#fff;border-radius:16px;padding:16px;box-shadow:0 3px 14px rgba(53,97,108,.08);display:flex;gap:14px;text-align:left;
+    border:0;font-family:inherit;color:inherit;cursor:pointer}
+  .evdate{flex:none;width:58px;text-align:center;background:var(--cream);border-radius:12px;padding:8px 0}
+  .evdate .d{font:700 1.5rem "Josefin Sans",sans-serif;color:var(--petrol);line-height:1}
+  .evdate .m{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--sage)}
+  .evcard b{color:var(--petrol)}
+  .evcard small{color:var(--muted);display:block;margin-top:3px}
+
+  /* Anfrage-Dialog */
+  .dlg{position:fixed;inset:0;background:rgba(20,34,38,.6);display:none;z-index:60;align-items:center;justify-content:center;padding:16px}
+  .dlg.open{display:flex}
+  .dlgbox{background:#fff;border-radius:20px;max-width:520px;width:100%;max-height:92vh;overflow:auto;padding:24px}
+  .dlgbox h2{margin-bottom:6px}
+  .dlgbox p{color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .f{display:block;margin-bottom:12px;font-size:.85rem;font-weight:700;color:var(--petrol)}
+  .f input,.f select,.f textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;font:inherit;font-size:.95rem;font-weight:400;color:var(--ink);background:#fff}
+  .f textarea{min-height:90px}
+  .dlgbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .contactline{font-size:.9rem;margin-top:12px;color:var(--ink);line-height:1.6}
+  .dlgmsg{font-size:.85rem;color:var(--sage);margin-top:10px;white-space:pre-wrap}
+
+  @media (max-width:860px){
+    .daycols{grid-template-columns:1fr}
+    .card{grid-template-columns:1fr}
+    .side{padding:20px 18px}
+    .about{grid-template-columns:1fr}
+    .qr{justify-self:start}
+  }
+  @media (max-width:420px){
+    .days{gap:4px}
+    .day{padding:6px 0;min-height:56px;border-radius:10px}
+    .day .dd{font-size:1.05rem}
+    .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+    .navbtn{width:42px;height:42px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="logo.png" alt="Traumapädagogik Döhler">
+    <p class="claim">Menschen begleiten · Teams stärken · Entwicklung fördern</p>
+    <h1>Wochenkalender 2027</h1>
+    <p class="sub">Jede Woche ein Bild und ein Impuls aus der Traumapädagogik.</p>
+    <button class="todaybar" id="todaybar" type="button"></button>
+  </header>
+
+  <main>
+    <div class="weekbar">
+      <button class="navbtn" id="prev" aria-label="Vorherige Woche">&#8592;</button>
+      <div class="weekinfo">
+        <div class="kw" id="kw">KW 1</div>
+        <div class="range" id="range"></div>
+        <button class="todaybtn" id="todayBtn" hidden>Zur aktuellen Woche</button>
+      </div>
+      <button class="navbtn" id="next" aria-label="Nächste Woche">&#8594;</button>
+    </div>
+
+    <article class="card" id="card">
+      <div class="imgbox" id="imgbox" role="button" tabindex="0" aria-label="Bild vergrößern">
+        <img id="wimg" alt="">
+        <span class="zoomhint">&#128269; Vergrößern</span>
+      </div>
+      <div class="side">
+        <div>
+          <div class="label">Thema der Woche</div>
+          <h3 class="title" id="wtitle"></h3>
+        </div>
+        <p class="impulse" id="wimp"></p>
+        <div>
+          <div class="label" style="margin-bottom:8px">Die Woche</div>
+          <div class="days" id="days"></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--rose)"></i>Feiertag</span><span><i style="background:var(--mint)"></i>Ihre Notiz</span></div>
+        <p class="holist" id="holist"></p>
+        <div class="cta">
+          <button class="btn primary" type="button" data-anfrage>Anfrage stellen</button>
+          <a class="btn" href="https://traumapaedagogik-doehler.de/" target="_blank" rel="noopener">Mehr erfahren</a>
+          <button class="btn" id="copyBtn" type="button">Link zu dieser Woche kopieren</button>
+          <span class="share-ok" id="copyOk" hidden>Kopiert ✓</span>
+        </div>
+      </div>
+    </article>
+
+    <section class="dayarea" id="dayarea" aria-live="polite">
+      <div class="dayhead"><h2 id="dayTitle"></h2><span id="dayTag"></span></div>
+      <div class="daycols">
+        <div class="box">
+          <h4>Mini-Impuls des Tages</h4>
+          <p class="ex-t" id="exT"></p>
+          <p class="ex-d" id="exD"></p>
+          <div class="ex-timer">
+            <button class="btn" type="button" id="exBtn">1 Minute mitmachen</button>
+            <span class="breath" id="breath" aria-hidden="true"></span>
+            <span id="exState" class="hint" style="margin:0"></span>
+          </div>
+        </div>
+        <div class="box">
+          <h4 id="evHead">Kontakt</h4>
+          <div id="dayEvents"></div>
+        </div>
+        <div class="box">
+          <h4>Meine Notiz</h4>
+          <textarea id="note" placeholder="Was möchten Sie sich für diesen Tag merken?"></textarea>
+          <div class="hint" id="noteHint">Wird nur auf diesem Gerät gespeichert – niemand sonst kann sie sehen.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="events" id="eventsSec" hidden>
+      <h2>Kommende Termine</h2>
+      <div class="evlist" id="evlist"></div>
+    </section>
+
+    <section class="year">
+      <div class="yearhead">
+        <h2>Das ganze Jahr im Überblick</h2>
+        <div class="months" id="months"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="about">
+      <div>
+        <h2>Traumapädagogik Döhler</h2>
+        <p>Etienne Döhler · Traumapädagoge und traumazentrierter Fachberater (DeGPT), Kerken am Niederrhein.
+          Trauma-sensible Begleitung, Beratung und Fortbildung für Menschen, pädagogische Teams und Einsatzkräfte.</p>
+        <ul class="services">
+          <li>Traumapädagogik</li><li>Persönlichkeitsentwicklung</li><li>Teamentwicklung</li>
+          <li>Traumasensible Einzelberatung</li><li>Stressmanagement</li><li>Psychologische Beratung &amp; EMDR</li>
+        </ul>
+        <div class="cta">
+          <button class="btn" type="button" data-anfrage>Fortbildung oder Beratung anfragen</button>
+          <a class="btn" href="https://traumapaedagogik-doehler.de/" target="_blank" rel="noopener" style="background:transparent;color:#fff">traumapaedagogik-doehler.de &#8599;</a>
+        </div>
+        <p class="contactline" id="contactAbout"></p>
+      </div>
+      <div class="qr"><img src="qr.jpg" alt="QR-Code zu traumapaedagogik-doehler.de">Direkt zur Website</div>
+    </section>
+  </main>
+
+  <footer>© 2027 Traumapädagogik Döhler · Alle Grafiken: Traumapädagogik Döhler<br>
+    Feiertage: Nordrhein-Westfalen</footer>
+</div>
+
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT">
+  <form class="dlgbox" id="dlgForm">
+    <h2 id="dlgT">Anfrage an Traumapädagogik Döhler</h2>
+    <p>Füllen Sie kurz aus, was Sie interessiert. Daraus entsteht eine fertige Nachricht, die Sie per E-Mail senden oder kopieren können.</p>
+    <label class="f">Ihr Name<input name="name" required autocomplete="name"></label>
+    <label class="f">Einrichtung / Organisation<input name="org" autocomplete="organization" placeholder="z. B. Grundschule, Kita, Feuerwehr …"></label>
+    <label class="f">Worum geht es?
+      <select name="art">
+        <option>Fortbildung für unser Team</option><option>Traumasensible Fachberatung</option>
+        <option>Einzelberatung</option><option>Stressmanagement / Resilienz</option>
+        <option>Teilnahme an einem Termin</option><option>Allgemeine Frage</option>
+      </select></label>
+    <label class="f">Ihre Nachricht<textarea name="msg" placeholder="Was wünschen Sie sich? Gibt es einen Wunschtermin?"></textarea></label>
+    <label class="f">Rückmeldung bitte an (E-Mail oder Telefon)<input name="reply" required></label>
+    <div class="dlgbtns">
+      <button class="btn primary" type="submit" id="dlgMail">Per E-Mail senden</button>
+      <button class="btn" type="button" id="dlgCopy">Nachricht kopieren</button>
+      <button class="btn" type="button" id="dlgClose">Abbrechen</button>
+    </div>
+    <div class="contactline" id="contactDlg"></div>
+    <div class="dlgmsg" id="dlgMsg"></div>
+  </form>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bildansicht">
+  <div class="lbtop"><span id="lbcap"></span><button class="lbclose" id="lbclose">Schließen ✕</button></div>
+  <div class="lbscroll" id="lbscroll"><img id="lbimg" alt=""></div>
+</div>
+
+<script>
+/* ====== HIER PFLEGEN ======
+   KONTAKT: E-Mail und Telefon eintragen.
+   TERMINE: eigene Termine, Format {datum:"2027-03-12", zeit:"18:00–19:30", titel:"…", ort:"…", link:"https://…"} */
+const KONTAKT = { email: "traumapaedagogik.doehler@gmail.com", telefon: "0152 28711575", web: "https://traumapaedagogik-doehler.de/" };
+const TERMINE = [
+];
+/* ========================== */
+
+const UEBUNGEN = [
+ ["Länger ausatmen","Atmen Sie ruhig ein und lassen Sie die Ausatmung etwas länger werden als die Einatmung. Drei bis fünf Atemzüge reichen schon."],
+ ["5-4-3-2-1","Benennen Sie still: 5 Dinge, die Sie sehen, 4, die Sie hören, 3, die Sie spüren, 2, die Sie riechen, und 1, das Sie schmecken."],
+ ["Füße spüren","Stellen Sie beide Füße fest auf den Boden. Spüren Sie für 30 Sekunden, wie der Boden Sie trägt."],
+ ["Schultern lösen","Ziehen Sie die Schultern hoch zu den Ohren, halten Sie kurz – und lassen Sie sie fallen. Dreimal wiederholen."],
+ ["Im Raum ankommen","Schauen Sie sich langsam im Raum um und drehen Sie dabei auch den Kopf. Was ist hier sicher und vertraut?"],
+ ["Hand aufs Herz","Legen Sie eine Hand auf Ihre Brust. Spüren Sie die Wärme und atmen Sie fünfmal ruhig unter Ihrer Hand."],
+ ["Ein Glas Wasser","Trinken Sie ein Glas Wasser ganz bewusst – Schluck für Schluck, ohne nebenbei etwas anderes zu tun."],
+ ["Drei gute Dinge","Was ist heute gelungen? Finden Sie drei Dinge, auch ganz kleine."],
+ ["Kurz bewegen","Gehen Sie zwei Minuten, nehmen Sie die Treppe oder schütteln Sie Arme und Beine einmal kräftig aus."],
+ ["Gefühl benennen","Was fühle ich gerade? Finden Sie ein einziges Wort dafür. Benennen schafft Abstand."],
+ ["Blick in die Weite","Schauen Sie 30 Sekunden aus dem Fenster in die Ferne. Weite entspannt die Augen – und das Nervensystem."],
+ ["Kiefer entspannen","Lassen Sie die Zähne leicht auseinander, die Zunge liegt locker. Wie fühlt sich das Gesicht jetzt an?"],
+ ["60 Sekunden Pause","Bevor der nächste Termin beginnt: eine Minute einfach nichts tun. Nur sitzen und atmen."],
+ ["Freundlich mit sich","Was würden Sie einem guten Freund in Ihrer Lage jetzt sagen? Sagen Sie es sich selbst."],
+ ["Ein Ankerwort","Wählen Sie ein Wort, das für Ruhe steht – etwa „Ruhe“ oder „Halt“. Denken Sie es bei jeder Ausatmung."],
+ ["Verbindung","Schreiben Sie heute einem Menschen, der Ihnen guttut, eine kurze Nachricht."],
+ ["Warme Hände","Reiben Sie die Handflächen warm und legen Sie sie für einige Atemzüge sanft über die Augen."],
+ ["Sicherer Ort","Denken Sie an einen Ort, an dem Sie sich wohl und sicher fühlen. Was sehen, hören, riechen Sie dort?"],
+ ["Haltung prüfen","Richten Sie sich auf, öffnen Sie den Brustkorb, Blick nach vorn. Haltung beeinflusst, wie wir uns fühlen."],
+ ["Summen","Summen Sie einen tiefen Ton beim Ausatmen. Die sanfte Vibration kann beruhigend wirken."],
+ ["Für heute genug","Beenden Sie den Tag bewusst – mit einem kleinen Ritual und dem Satz: „Für heute ist es genug.“"]
+];
+
+const WEEKS = [
+ ["Willkommen im Jahr 2027","Schön, dass Sie hier sind! Dieser Kalender begleitet Sie Woche für Woche mit einem Bild und einem kurzen Impuls aus der Traumapädagogik."],
+ ["Was Sie über Trauma-Pädagogik wissen sollten","Trauma ist eine normale Reaktion auf ein unnormales Ereignis. Wer das versteht, sieht hinter schwierigem Verhalten den Menschen."],
+ ["Stress verstehen","Stress ist zunächst eine sinnvolle Schutzreaktion des Körpers. Belastend wird er, wenn die Erholung dauerhaft ausbleibt."],
+ ["Lernen mit Freude: Die Säulen kindlicher Entwicklung","Kinder lernen am besten, wenn sie sich sicher fühlen, sich bewegen dürfen und Freude erleben."],
+ ["Das Gehirn-Haus & Ihr Stressfenster","Unter Stress übernehmen die „unteren Etagen“ des Gehirns. Deshalb gilt: erst beruhigen, dann reden."],
+ ["Die Döhler-Stressampel","Sehen – Atmen – Handeln: Ein kurzer innerer Check, bevor Sie reagieren, schafft Raum für Klarheit."],
+ ["Die 6 Grundgefühle & ihre tiefe Funktion","Gefühle sind keine Schwäche, sondern Wegweiser. Jedes Grundgefühl erfüllt eine schützende Aufgabe."],
+ ["Pädagogik wirkt: Wie Bindung das kindliche Gehirn schützt","Schon ein einziger verlässlicher Mensch kann einen großen Unterschied machen. Beziehung ist ein Schutzfaktor."],
+ ["Arten von Trauma: Ein Überblick","Trauma ist nicht gleich Trauma. Ein einmaliges Ereignis wirkt anders als lang andauernde Belastung in Beziehungen."],
+ ["Selbstregulation im Klassenzimmer: Micro-Übungen","Schon eine Minute bewusster Regulation kann helfen, im Akutfall wieder handlungsfähig zu werden."],
+ ["Mentale Stärke in der Leitstelle","Wer anderen in Notlagen hilft, braucht auch Werkzeuge für sich selbst – einen persönlichen Notfallkoffer."],
+ ["Trigger & Flashback","Ein Trigger holt Vergangenes in die Gegenwart. Orientierung im Hier und Jetzt hilft: „Du bist jetzt sicher.“"],
+ ["Der Innere Garten: Imagination zur Selbstregulation","Innere Bilder können ein sicherer Ort sein. Imagination ist eine sanfte Methode, um zur Ruhe zu kommen."],
+ ["Verhalten verstehen – Sicherheit schenken","Hinter herausforderndem Verhalten steckt oft eine Überlebensstrategie. Sicherheit verändert mehr als Strenge."],
+ ["Stress sitzt im Körper: Verstehen & Lösen","Stress zeigt sich in Schultern, Kiefer und Atem. Ein kurzer Körper-Check zwischendurch lohnt sich."],
+ ["Die 5 sicheren Orte in der Traumapädagogik","Sicherheit hat viele Orte: im Außen, in Beziehungen und in uns selbst."],
+ ["Die ACE-Studie: Wie Kindheitserfahrungen prägen","Belastende Kindheitserfahrungen können lange nachwirken. Umso wichtiger sind Menschen, die heute stärken."],
+ ["Toolkit: Mikroübungen für Selbstregulation","Kleine Übungen, große Wirkung: Regulation lässt sich in jeden Alltag einbauen."],
+ ["Stress im Griff: Resilienz im Einsatzalltag","Belastung gehört zum Einsatz dazu. Resilienz wächst durch Vorbereitung, ein starkes Team und gute Nachsorge."],
+ ["Verhalten verstehen statt bewerten","Statt „Was ist los mit dir?“ lieber „Was ist dir passiert?“ – ein Perspektivwechsel mit großer Wirkung."],
+ ["Sekundenbruchteile: Wie das Gehirn auf Gefahr reagiert","Unser Alarmsystem ist schneller als unser Denken. Das erklärt manche Reaktion, die scheinbar „aus dem Nichts“ kommt."],
+ ["Kleine Rituale, große Wirkung","Rituale geben Halt. Wiederkehrende Abläufe schaffen Vorhersehbarkeit – und damit Sicherheit."],
+ ["Kinder verstehen – Entwicklung stärken","Die Annahme des guten Grundes: Aus Sicht des Kindes ergibt sein Verhalten einen Sinn."],
+ ["Stress verstehen & regulieren","Der Weg aus der Alarmbereitschaft führt über den Körper: atmen, spüren, sich orientieren."],
+ ["Die biologische Macht der Beziehung","Co-Regulation wirkt: Ein ruhiges Nervensystem kann ein aufgeregtes beruhigen."],
+ ["Wege zur inneren Balance","Was gibt Ihnen Kraft? Ein bewusster Blick auf die eigenen Ressourcen stärkt im Alltag."],
+ ["Was traumatisierte Kinder brauchen","Äußere Sicherheit, Beziehung und Verständnis – die Grundpfeiler, auf denen Heilung wachsen kann."],
+ ["Psychische Einsatzfähigkeit: Das Modell nach Döhler","Psychische Stabilität ist kein Zufall. Sie lässt sich gezielt stärken – bei Menschen und in Organisationen."],
+ ["Drei Phasen traumatischer Erfahrungen","Nicht allein das Ereignis macht das Trauma, sondern die Überforderung, es verarbeiten zu können."],
+ ["Ganzheitliche Selbstfürsorge","Selbstfürsorge ist kein Luxus. Sie ist die Grundlage dafür, für andere da sein zu können – gerade jetzt im Sommer."],
+ ["Der pädagogische Alltag: Eine Frage der Reihenfolge","Erst Sicherheit und Regulation – dann Lernen, Reflexion und Veränderung."],
+ ["Subjektive Wahrnehmung: Die Filter unserer Realität","Jeder Mensch sieht die Welt durch seine eigene Brille, geprägt von dem, was er erlebt hat."],
+ ["Von Stress zu Sicherheit: Nonverbale Regulation","Kinder lernen Selbstregulation über Co-Regulation. Ihre eigene Ruhe ist Ihr wichtigstes Werkzeug."],
+ ["EMDR kompakt: Trauma verstehen und verarbeiten","EMDR ist ein gut erforschtes Verfahren, das helfen kann, belastende Erinnerungen zu verarbeiten."],
+ ["Resilienz im Klassenzimmer","Wenn der „Denk-Apparat“ abschaltet, hilft Verbindung vor Korrektur – ein guter Leitsatz für den Schulstart."],
+ ["Traumasensible Pädagogik: Wenn Stress das Lernen blockiert","Ein gestresstes Gehirn kann schlecht lernen. Sicherheit ist die Voraussetzung für Bildung."],
+ ["Verstehen, was im Inneren passiert","Das Nervensystem prüft ständig: Bin ich sicher? Die Antwort prägt unser ganzes Verhalten."],
+ ["Trauma in der Gruppe: Schutzstrategien verstehen","Schutzstrategien zeigen sich auch in Gruppen. Klare, transparente Strukturen geben allen Halt."],
+ ["Zustandsgebundenes Erinnern","Traumatische Erinnerungen können sich anfühlen wie jetzt. Das ist kein „Übertreiben“, sondern Neurobiologie."],
+ ["Leben ist Regulation","Gesund sein heißt nicht, nie aus dem Gleichgewicht zu geraten – sondern immer wieder zurückzufinden."],
+ ["Mentale Krise im Klassenzimmer","Am 10. Oktober ist Welttag der seelischen Gesundheit – ein guter Anlass, gemeinsam hinzuschauen."],
+ ["Konkret handeln in Eskalationssituationen","In der akuten Phase gilt: weniger Worte, mehr Ruhe. Das Aufarbeiten kommt später."],
+ ["Das traumapädagogische Stressmodell nach Döhler","Vom automatischen Schutzmechanismus zur bewussten Regulation – Schritt für Schritt."],
+ ["Prinzipien der traumasensiblen Begleitung","Wege aus der Ohnmacht führen über Sicherheit, Selbstwirksamkeit und Beziehung."],
+ ["Verstehen statt Bewerten: Die Lebenslinien-Übung","Wer die Geschichte eines Menschen kennt, versteht sein Verhalten besser."],
+ ["Kindeswohlgefährdung: Erkennen – Einschätzen – Handeln","Hinschauen, dokumentieren, kollegial beraten: Ein klarer Handlungsplan gibt Sicherheit."],
+ ["Traumasensibel handeln: Verhalten als Schutzstrategie","Kampf, Flucht, Erstarren: Verhalten ist oft ein Versuch, sich zu schützen."],
+ ["Traumapädagogik in der Praxis","Kinder besser verstehen und begleiten – in Kita, Schule und Jugendhilfe."],
+ ["Kindheit NEU begleiten","Belastende Muster können über Generationen weitergegeben werden – und sie können unterbrochen werden."],
+ ["Stress im Griff: Resilienz im pädagogischen Alltag","Gerade in der Vorweihnachtszeit: Achten Sie auch auf Ihre eigenen Pausen."],
+ ["Traumapädagogik: Der Weg zu Sicherheit und Wohlbefinden","Traumapädagogik verbindet Haltung, Wissen und praktische Methoden zu einem stimmigen Ganzen."],
+ ["Verstehen schafft Sicherheit","Zum Jahresende eine Frage an Sie: Was hat Ihnen in diesem Jahr Sicherheit gegeben?"],
+ ["Traumapädagogik Döhler: Ihr Partner für Resilienz & Stärke","Sie möchten mehr erfahren? Fortbildung, Beratung, Teamentwicklung – sprechen Sie mich gerne an."]
+];
+
+const HOL = { // NRW 2027 (+ Rosenmontag als Hinweis)
+ "2027-01-01":"Neujahr","2027-02-08":"Rosenmontag","2027-03-26":"Karfreitag","2027-03-28":"Ostersonntag",
+ "2027-03-29":"Ostermontag","2027-05-01":"Tag der Arbeit","2027-05-06":"Christi Himmelfahrt",
+ "2027-05-16":"Pfingstsonntag","2027-05-17":"Pfingstmontag","2027-05-27":"Fronleichnam",
+ "2027-10-03":"Tag der Deutschen Einheit","2027-11-01":"Allerheiligen","2027-12-24":"Heiligabend",
+ "2027-12-25":"1. Weihnachtstag","2027-12-26":"2. Weihnachtstag","2027-12-31":"Silvester"
+};
+const SOFT = new Set(["2027-02-08","2027-12-24","2027-12-31"]); // keine gesetzlichen Feiertage
+
+const MON = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+const MON_S = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+const DN = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+const DLONG = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const img = i => `img/w${pad(i)}.jpg`;
+const thumb = i => `thumbs/w${pad(i)}.jpg`;
+
+// Woche 0 = KW 53/2026 (28.12.2026–3.1.2027), Woche n = ISO-KW n 2027
+function monday(i){ const d = new Date(2027,0,4); d.setDate(d.getDate() + 7*(i-1)); return d; }
+function days(i){ const m = monday(i); return [...Array(7)].map((_,k)=>{const d=new Date(m); d.setDate(m.getDate()+k); return d;}); }
+function kwLabel(i){ return i===0 ? "KW 53" : "KW " + i; }
+function rangeLabel(i){
+  const ds = days(i), a = ds[0], b = ds[6];
+  const fa = a.getMonth()===b.getMonth() && a.getFullYear()===b.getFullYear()
+    ? `${a.getDate()}.` : `${a.getDate()}. ${MON[a.getMonth()]}${a.getFullYear()!==b.getFullYear()?" "+a.getFullYear():""}`;
+  return `${fa}\u2009–\u2009${b.getDate()}. ${MON[b.getMonth()]} ${b.getFullYear()}`;
+}
+function weekOf(date){
+  for(let i=0;i<WEEKS.length;i++){ const ds=days(i); const s=new Date(ds[0]); const e=new Date(ds[6]); e.setHours(23,59,59);
+    if(date>=s && date<=e) return i; }
+  return -1;
+}
+
+const $ = id => document.getElementById(id);
+let todayIdx = weekOf(new Date());
+let todayKey = iso(new Date());
+let sel = todayKey;
+let cur = 0;
+
+function render(i, push){
+  cur = Math.max(0, Math.min(WEEKS.length-1, i));
+  const [t, imp] = WEEKS[cur];
+  $("kw").textContent = kwLabel(cur);
+  $("range").textContent = rangeLabel(cur);
+  $("wtitle").textContent = t;
+  $("wimp").textContent = imp;
+  const im = $("wimg");
+  im.classList.add("loading");
+  im.onload = () => im.classList.remove("loading");
+  im.src = img(cur); im.alt = t;
+  $("prev").disabled = cur===0; $("next").disabled = cur===WEEKS.length-1;
+  $("todayBtn").hidden = !(todayIdx>=0 && todayIdx!==cur);
+
+  const tIso = iso(new Date());
+  const wk = days(cur).map(iso);
+  if(!wk.includes(sel)) sel = wk.includes(tIso) ? tIso : wk[cur===0 ? 4 : 0];
+  const hols = [];
+  $("days").innerHTML = days(cur).map((d,k)=>{
+    const key = iso(d), h = HOL[key];
+    if(h) hols.push(`${d.getDate()}.${d.getMonth()+1}. ${h}`);
+    const cls = ["day", k>4?"we":"", d.getFullYear()!==2027?"other":"", h&&!SOFT.has(key)?"hol":"", key===tIso?"today":""].join(" ");
+    const marks = (h?'<i class="mh"></i>':"") + (eventsOn(key).length?'<i class="mt"></i>':"") + (getNote(key)?'<i class="mn"></i>':"");
+    return `<button type="button" class="${cls}${key===sel?" sel":""}" data-k="${key}" title="${h||""}" aria-label="${DLONG[(k+1)%7]}, ${d.getDate()}. ${MON[d.getMonth()]}${h?", "+h:""}"><div class="dn">${DN[k]}</div><div class="dd">${d.getDate()}</div><div class="marks">${marks}</div></button>`;
+  }).join("");
+  $("holist").textContent = hols.join(" · ");
+  renderDay();
+
+  document.querySelectorAll(".tile").forEach(el=>el.classList.toggle("cur", +el.dataset.i===cur));
+  const mm = monday(cur); const thu = new Date(mm); thu.setDate(mm.getDate()+3);
+  if(push !== false){ try{ history.replaceState(null,"","#kw"+(cur===0?"53":cur)); }catch(e){} }
+  // vorladen
+  [cur+1,cur-1].forEach(j=>{ if(j>=0&&j<WEEKS.length){ const p=new Image(); p.src=img(j);} });
+}
+
+// Jahresübersicht
+function buildGrid(){
+  $("grid").innerHTML = WEEKS.map((w,i)=>`<button class="tile${i===todayIdx?" now":""}" data-i="${i}" data-m="${i===0?0:(()=>{const d=monday(i);d.setDate(d.getDate()+3);return d.getMonth();})()}">
+    <img loading="lazy" src="${thumb(i)}" alt="">
+    <div class="tl"><div class="tk">${kwLabel(i)} · ${(()=>{const d=days(i)[0];return d.getDate()+". "+MON_S[d.getMonth()]})()}</div><div class="tt">${w[0]}</div></div></button>`).join("");
+  $("grid").addEventListener("click", e=>{
+    const t = e.target.closest(".tile"); if(!t) return;
+    render(+t.dataset.i); $("card").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  const mb = $("months");
+  mb.innerHTML = `<button class="on" data-m="-1">Alle</button>` + MON_S.map((m,k)=>`<button data-m="${k}">${m}</button>`).join("");
+  mb.addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    mb.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x===b));
+    const m = +b.dataset.m;
+    document.querySelectorAll(".tile").forEach(t=>{ t.style.display = (m<0 || +t.dataset.m===m) ? "" : "none"; });
+  });
+}
+
+// Navigation
+$("prev").onclick = () => render(cur-1);
+$("next").onclick = () => render(cur+1);
+$("todayBtn").onclick = () => render(todayIdx);
+document.addEventListener("keydown", e=>{
+  if($("lb").classList.contains("open")){ if(e.key==="Escape") closeLb(); return; }
+  if(e.target.closest && e.target.closest("textarea,input,select,.dlg")) return;
+  if(e.key==="ArrowLeft") render(cur-1);
+  if(e.key==="ArrowRight") render(cur+1);
+});
+// Wischen
+let sx=null, sy=null;
+const box = $("imgbox");
+box.addEventListener("touchstart", e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+box.addEventListener("touchend", e=>{
+  if(sx===null) return; const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)){ render(cur + (dx<0?1:-1)); box.dataset.swiped="1"; }
+  sx=null;
+});
+
+// Lightbox
+function openLb(){
+  if(box.dataset.swiped){ delete box.dataset.swiped; return; }
+  $("lbimg").src = img(cur); $("lbimg").alt = WEEKS[cur][0];
+  $("lbcap").textContent = kwLabel(cur) + " · " + WEEKS[cur][0];
+  $("lbscroll").classList.remove("zoom");
+  $("lb").classList.add("open"); $("lbclose").focus();
+}
+function closeLb(){ $("lb").classList.remove("open"); box.focus(); }
+box.onclick = openLb;
+box.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openLb(); } };
+$("lbclose").onclick = closeLb;
+$("lb").addEventListener("click", e=>{ if(e.target.id==="lbscroll") closeLb(); });
+$("lbimg").onclick = () => $("lbscroll").classList.toggle("zoom");
+
+// Link kopieren
+$("copyBtn").onclick = async () => {
+  const url = location.href.split("#")[0] + "#kw" + (cur===0?"53":cur);
+  try{ await navigator.clipboard.writeText(url); $("copyOk").hidden=false; setTimeout(()=>$("copyOk").hidden=true,2200); }
+  catch(e){ $("copyOk").textContent = url; $("copyOk").hidden=false; }
+};
+
+function fromHash(){
+  const m = /^#kw(\d{1,2})$/.exec(location.hash||"");
+  if(!m) return null; const n = +m[1];
+  if(n===53) return 0; return (n>=1 && n<=52) ? n : null;
+}
+window.addEventListener("hashchange", ()=>{ const h=fromHash(); if(h!==null && h!==cur) render(h,false); });
+
+function isoWeek(d){ const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const dn=t.getUTCDay()||7;
+  t.setUTCDate(t.getUTCDate()+4-dn); const y=new Date(Date.UTC(t.getUTCFullYear(),0,1)); return Math.ceil(((t-y)/864e5+1)/7); }
+function renderToday(){
+  const d = new Date(), key = iso(d), bar = $("todaybar");
+  let html = `<span class="tdot"></span><span>Heute: <b>${DLONG[d.getDay()]}, ${d.getDate()}. ${MON[d.getMonth()]} ${d.getFullYear()}</b></span><span class="tx">KW ${isoWeek(d)}</span>`;
+  if(HOL[key]) html += `<span class="tx">· ${HOL[key]}</span>`;
+  const start = new Date(2027,0,1);
+  if(d < start){ const n = Math.ceil((start - new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5);
+    html += `<span class="tx">· noch ${n} ${n===1?"Tag":"Tage"} bis 2027</span>`; }
+  bar.innerHTML = html;
+  bar.classList.toggle("link", todayIdx>=0);
+  bar.title = todayIdx>=0 ? "Zur aktuellen Woche springen" : "";
+}
+$("todaybar").onclick = () => { if(todayIdx>=0){ render(todayIdx); } };
+// Tageswechsel automatisch erkennen (auch wenn die Seite über Nacht offen bleibt)
+function checkDay(){
+  const k = iso(new Date());
+  if(k === todayKey) return;
+  const wasOnToday = cur === todayIdx;
+  if(sel === todayKey) sel = k;
+  todayKey = k; todayIdx = weekOf(new Date());
+  document.querySelectorAll(".tile").forEach(t=>t.classList.toggle("now", +t.dataset.i===todayIdx));
+  renderToday();
+  render(wasOnToday && todayIdx>=0 ? todayIdx : cur);
+}
+setInterval(checkDay, 30000);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) checkDay(); });
+
+// ---- Notizen (nur lokal) ----
+const NK = k => "tpd2027-notiz-" + k;
+function getNote(k){ try{ return localStorage.getItem(NK(k)) || ""; }catch(e){ return ""; } }
+function setNote(k,v){ try{ v.trim() ? localStorage.setItem(NK(k), v) : localStorage.removeItem(NK(k)); return true; }catch(e){ return false; } }
+let noteTimer=null;
+$("note").addEventListener("input", ()=>{
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(()=>{
+    const ok = setNote(sel, $("note").value);
+    $("noteHint").innerHTML = ok ? '<span class="saved">Gespeichert ✓</span> · nur auf diesem Gerät sichtbar'
+                                 : 'Ihr Browser erlaubt hier kein Speichern – die Notiz geht beim Schließen verloren.';
+    const btn = document.querySelector(`.day[data-k="${sel}"] .marks`);
+    if(btn){ const has = !!$("note").value.trim(); const m = btn.querySelector(".mn");
+      if(has && !m) btn.insertAdjacentHTML("beforeend",'<i class="mn"></i>'); if(!has && m) m.remove(); }
+  }, 400);
+});
+
+// ---- Termine ----
+const TS = TERMINE.slice().sort((a,b)=>a.datum.localeCompare(b.datum));
+function eventsOn(k){ return TS.filter(t=>t.datum===k); }
+function fmtDate(k){ const [y,m,d]=k.split("-").map(Number); return `${d}. ${MON[m-1]} ${y}`; }
+function evHtml(t){
+  return `<div class="ev"><b>${t.titel}</b><small>${[t.zeit,t.ort].filter(Boolean).join(" · ")}</small>
+    ${t.link?`<div><a href="${t.link}" target="_blank" rel="noopener">Details &amp; Anmeldung ↗</a></div>`:`<div><a href="#" data-anfrage data-termin="${t.titel} am ${fmtDate(t.datum)}">Platz anfragen</a></div>`}</div>`;
+}
+function renderEvents(){
+  const now = iso(new Date());
+  const up = TS.filter(t=>t.datum>=now).slice(0,9);
+  $("eventsSec").hidden = up.length===0;
+  $("evlist").innerHTML = up.map(t=>{ const [y,m,d]=t.datum.split("-").map(Number);
+    return `<button class="evcard" type="button" data-k="${t.datum}"><div class="evdate"><div class="d">${d}</div><div class="m">${MON_S[m-1]}</div></div>
+      <div><b>${t.titel}</b><small>${[t.zeit,t.ort].filter(Boolean).join(" · ")}</small></div></button>`; }).join("");
+}
+$("evlist").addEventListener("click", e=>{
+  const c = e.target.closest(".evcard"); if(!c) return;
+  const i = weekOf(new Date(c.dataset.k+"T12:00")); if(i<0) return;
+  sel = c.dataset.k; render(i); $("dayarea").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+// ---- Tagesbereich ----
+function dayOfYear(k){ const [y,m,d]=k.split("-").map(Number); return Math.round((Date.UTC(y,m-1,d)-Date.UTC(y,0,1))/864e5); }
+function renderDay(){
+  const [y,m,d] = sel.split("-").map(Number);
+  const dt = new Date(y,m-1,d);
+  $("dayTitle").textContent = `${DLONG[dt.getDay()]}, ${d}. ${MON[m-1]} ${y}`;
+  const h = HOL[sel];
+  $("dayTag").innerHTML = sel===iso(new Date()) ? '<span class="tag td">Heute</span>' : (h ? `<span class="tag">${h}</span>` : "");
+  if(sel===iso(new Date()) && h) $("dayTag").innerHTML += ` <span class="tag">${h}</span>`;
+  const u = UEBUNGEN[dayOfYear(sel) % UEBUNGEN.length];
+  $("exT").textContent = u[0]; $("exD").textContent = u[1];
+  stopTimer();
+  const ev = eventsOn(sel);
+  $("evHead").textContent = ev.length ? "Termine an diesem Tag" : "Kontakt";
+  $("dayEvents").innerHTML = ev.length ? ev.map(evHtml).join("") :
+    `<p class="empty">Sie wünschen eine Fortbildung, Fachberatung oder ein Gespräch? Ich freue mich auf Ihre Nachricht.</p>
+     <button class="btn primary" type="button" data-anfrage>Anfrage stellen</button>
+     <p class="contactline" style="font-size:.85rem">${contactHtml()}</p>`;
+  $("note").value = getNote(sel);
+  $("noteHint").textContent = "Wird nur auf diesem Gerät gespeichert – niemand sonst kann sie sehen.";
+  document.querySelectorAll(".day").forEach(b=>b.classList.toggle("sel", b.dataset.k===sel));
+}
+$("days").addEventListener("click", e=>{
+  const b = e.target.closest(".day"); if(!b) return;
+  sel = b.dataset.k; renderDay();
+  if(window.innerWidth<860) $("dayarea").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+// 1-Minute-Begleitung mit Atemkreis
+let exTimer=null, exLeft=0;
+function stopTimer(){ clearInterval(exTimer); exTimer=null; $("breath").classList.remove("in"); $("exState").textContent=""; $("exBtn").textContent="1 Minute mitmachen"; }
+$("exBtn").onclick = ()=>{
+  if(exTimer){ stopTimer(); return; }
+  exLeft = 60; let t = 0; $("exBtn").textContent = "Beenden";
+  const tick = ()=>{
+    const phase = t % 10;  // 4 s ein, 6 s aus
+    $("breath").classList.toggle("in", phase < 4);
+    $("exState").textContent = (phase < 4 ? "einatmen … " : "ausatmen … ") + exLeft + " s";
+    if(exLeft<=0){ stopTimer(); $("exState").textContent = "Geschafft – schön, dass Sie sich die Minute genommen haben."; return; }
+    exLeft--; t++;
+  };
+  tick(); exTimer = setInterval(tick, 1000);
+};
+
+// ---- Anfrage ----
+function contactHtml(){
+  const parts = [];
+  if(KONTAKT.email) parts.push(`E-Mail: <a href="mailto:${KONTAKT.email}">${KONTAKT.email}</a>`);
+  if(KONTAKT.telefon) parts.push(`Telefon: <a href="tel:${KONTAKT.telefon.replace(/[^+\d]/g,"")}">${KONTAKT.telefon}</a>`);
+  parts.push(`Web: <a href="${KONTAKT.web}" target="_blank" rel="noopener">${KONTAKT.web.replace(/^https?:\/\/|\/$/g,"")}</a>`);
+  return parts.join(" · ");
+}
+$("contactAbout").innerHTML = contactHtml().replace(/<a /g,'<a style="color:#fff" ');
+$("contactDlg").innerHTML = contactHtml();
+if(!KONTAKT.email) $("dlgMail").hidden = true;
+function msgText(){
+  const f = $("dlgForm").elements;
+  return `Guten Tag Herr Döhler,\n\nich interessiere mich für: ${f.art.value}.\n\n${f.msg.value.trim()||"(keine weitere Nachricht)"}\n\nName: ${f.name.value}\nEinrichtung: ${f.org.value||"–"}\nRückmeldung an: ${f.reply.value}\n\n(gesendet über den Wochenkalender 2027)`;
+}
+function openDlg(termin){
+  $("dlgMsg").textContent = "";
+  if(termin){ $("dlgForm").elements.art.value = "Teilnahme an einem Termin"; $("dlgForm").elements.msg.value = "Ich möchte gern teilnehmen: " + termin; }
+  $("dlg").classList.add("open"); $("dlgForm").elements.name.focus();
+}
+function closeDlg(){ $("dlg").classList.remove("open"); }
+document.addEventListener("click", e=>{
+  const a = e.target.closest("[data-anfrage]"); if(!a) return;
+  e.preventDefault(); openDlg(a.dataset.termin);
+});
+$("dlgClose").onclick = closeDlg;
+$("dlg").addEventListener("click", e=>{ if(e.target.id==="dlg") closeDlg(); });
+$("dlgForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  if(!KONTAKT.email) return;
+  const f = $("dlgForm").elements;
+  const href = `mailto:${KONTAKT.email}?subject=${encodeURIComponent("Anfrage: "+f.art.value)}&body=${encodeURIComponent(msgText())}`;
+  const a = document.createElement("a"); a.href = href; a.target = "_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+  $("dlgMsg").textContent = "Ihr E-Mail-Programm sollte sich jetzt öffnen. Falls nicht: Nachricht kopieren und an " + KONTAKT.email + " senden.";
+});
+$("dlgCopy").onclick = async ()=>{
+  const f = $("dlgForm");
+  if(!f.reportValidity()) return;
+  const t = msgText();
+  try{ await navigator.clipboard.writeText(t); $("dlgMsg").textContent = "Nachricht kopiert ✓ – fügen Sie sie in eine E-Mail oder das Kontaktformular auf der Website ein."; }
+  catch(err){ $("dlgMsg").textContent = "Kopieren war nicht möglich. Hier ist Ihr Text zum Markieren:\n\n" + t; }
+};
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("dlg").classList.contains("open")) closeDlg(); });
+
+renderEvents();
+buildGrid();
+renderToday();
+const h = fromHash();
+render(h!==null ? h : (todayIdx>=0 ? todayIdx : (new Date() < new Date(2026,11,28) ? 0 : 52)), h===null ? false : false);
+</script>
+</body>
+</html>
